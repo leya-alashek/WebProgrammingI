@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Environment files (passwords, secrets) - never commit; share .env.example instead
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Database dumps / backups (may contain real data)
+*.dump
+*.backup
+*.sql.gz
+
+# DBeaver workspace files (if a DBeaver project is created inside this folder)
+.dbeaver/
+.project
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini

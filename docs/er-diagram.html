@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clinic Portal ER Diagram</title>
+<style>
+  body { margin: 0; padding: 24px; background: #fff; color: #13294b; font-family: "Segoe UI", Arial, sans-serif; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  p { margin: 0 0 20px; color: #555; font-size: 13px; }
+  .mermaid { overflow-x: auto; }
+</style>
+</head>
+<body>
+<h1>Medical Clinic Portal: ER Diagram</h1>
+<p>Generated from docs/er-diagram.md. Screenshot or Ctrl+P → Save as PDF (landscape).</p>
+<pre class="mermaid">
+erDiagram
+    USERS ||--o| PATIENT : "has profile"
+    USERS ||--o| DOCTOR : "has profile"
+    USERS ||--o| STAFF : "has profile"
+    USERS ||--o{ REFRESH_TOKEN : "holds"
+    CLINIC ||--o{ DOCTOR : employs
+    CLINIC ||--o{ STAFF : employs
+    DOCTOR ||--o{ DOCTOR_SCHEDULE : "works"
+    PATIENT ||--o{ APPOINTMENT : books
+    DOCTOR ||--o{ APPOINTMENT : attends
+    PATIENT ||--o{ MEDICAL_RECORD : has
+    DOCTOR ||--o{ MEDICAL_RECORD : writes
+    APPOINTMENT |o--o| MEDICAL_RECORD : produces
+    MEDICAL_RECORD ||--o{ DIAGNOSIS : includes
+    MEDICAL_RECORD ||--o{ PRESCRIPTION : includes
+    MEDICAL_RECORD ||--o{ LAB_TEST : orders
+    PRESCRIPTION ||--|{ PRESCRIPTION_ITEM : contains
+
+    USERS {
+        int user_id PK
+        string email UK
+        string password_hash
+        string role "patient | doctor | staff | admin"
+        timestamp created_at
+        timestamp last_login
+    }
+    CLINIC {
+        int clinic_id PK
+        string name
+        string phone
+        string email
+        string address
+        timestamp created_at
+    }
+    PATIENT {
+        int patient_id PK
+        int user_id FK "unique, nullable (walk-ins)"
+        string first_name
+        string last_name
+        date date_of_birth
+        string gender
+        string phone
+        string email
+        string address
+        string blood_type
+        string allergies
+        timestamp created_at
+    }
+    DOCTOR {
+        int doctor_id PK
+        int user_id FK "unique"
+        int clinic_id FK
+        string first_name
+        string last_name
+        string specialization
+        string phone
+        string license_number UK
+        string bio
+        timestamp created_at
+    }
+    DOCTOR_SCHEDULE {
+        int schedule_id PK
+        int doctor_id FK
+        int day_of_week "0 = Sunday"
+        time start_time
+        time end_time
+        int slot_minutes
+    }
+    STAFF {
+        int staff_id PK
+        int user_id FK "unique"
+        int clinic_id FK
+        string first_name
+        string last_name
+        string position "receptionist | nurse | ..."
+        string phone
+        timestamp created_at
+    }
+    APPOINTMENT {
+        int appointment_id PK
+        int patient_id FK
+        int doctor_id FK
+        date appointment_date
+        time appointment_time
+        string status "requested | scheduled | completed | cancelled | no_show"
+        string reason
+        string notes
+        timestamp created_at
+    }
+    MEDICAL_RECORD {
+        int record_id PK
+        int patient_id FK
+        int doctor_id FK
+        int appointment_id FK "unique, nullable"
+        date visit_date
+        string treatment_plan
+        string notes
+        timestamp created_at
+    }
+    DIAGNOSIS {
+        int diagnosis_id PK
+        int record_id FK
+        string icd_code
+        string description
+        timestamp created_at
+    }
+    PRESCRIPTION {
+        int prescription_id PK
+        int record_id FK
+        string status "active | refill_requested | refill_approved | refill_denied | expired"
+        int refills_allowed
+        string notes
+        timestamp created_at
+    }
+    PRESCRIPTION_ITEM {
+        int item_id PK
+        int prescription_id FK
+        string medication_name
+        string dosage
+        string frequency
+        string duration
+        string instructions
+    }
+    LAB_TEST {
+        int lab_test_id PK
+        int record_id FK
+        string test_name
+        string status "ordered | completed"
+        date test_date
+        string result
+        string notes
+        timestamp created_at
+    }
+    REFRESH_TOKEN {
+        int token_id PK
+        int user_id FK
+        string token_hash UK
+        timestamp expires_at
+        timestamp revoked_at
+        timestamp created_at
+    }
+</pre>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true, theme: "default", er: { layoutDirection: "TB" } });
+</script>
+</body>
+</html>
